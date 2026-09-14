@@ -1,0 +1,27 @@
+services:
+  copilot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_UID: ${USER_UID:-1000}
+        USER_GID: ${USER_GID:-1000}
+    image: copilot-agent:local
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      COPILOT_HOME: /home/agent/.copilot
+      GH_CONFIG_DIR: /home/agent/.config/gh
+      # Optional: uncomment in .env to authenticate non-interactively.
+      # COPILOT_GITHUB_TOKEN: ${COPILOT_GITHUB_TOKEN:-}
+      # GH_TOKEN: ${GH_TOKEN:-}
+    volumes:
+      - ${PROJECT_PATH}:/workspace
+      - copilot-home:/home/agent/.copilot
+      - gh-config:/home/agent/.config/gh
+    init: true
+
+volumes:
+  copilot-home:
+  gh-config:
