@@ -55,10 +55,23 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 
 # Create a runtime user whose UID/GID can match the host user.
-RUN groupadd --gid "${USER_GID}" agent \
-    && useradd --uid "${USER_UID}" --gid "${USER_GID}" --create-home --shell /bin/bash agent \
+RUN if getent passwd "${USER_UID}" >/dev/null; then \
+        userdel "$(getent passwd "${USER_UID}" | cut -d: -f1)" || true; \
+    fi \
+    && if getent group "${USER_GID}" >/dev/null; then \
+        GROUP_NAME="$(getent group "${USER_GID}" | cut -d: -f1)"; \
+    else \
+        groupadd --gid "${USER_GID}" agent; \
+        GROUP_NAME=agent; \
+    fi \
+    && useradd \
+        --uid "${USER_UID}" \
+        --gid "${USER_GID}" \
+        --create-home \
+        --shell /bin/bash \
+        agent \
     && mkdir -p /workspace /home/agent/.copilot /home/agent/.config/gh \
-    && chown -R agent:agent /home/agent /workspace
+    && chown -R agent:"${GROUP_NAME}" /home/agent /workspace
 
 RUN npm install --global @github/copilot \
     && npm cache clean --force
