@@ -73,7 +73,7 @@ RUN if getent passwd "${USER_UID}" >/dev/null; then \
     && mkdir -p /workspace /home/agent/.copilot /home/agent/.config/gh \
     && chown -R agent:"${GROUP_NAME}" /home/agent /workspace
 
-RUN npm install --global @github/copilot \
+RUN npm install --global @github/copilot@latest \
     && npm cache clean --force
 
 ENV COPILOT_HOME=/home/agent/.copilot

@@ -350,10 +350,10 @@ The Copilot and GitHub CLI configuration remains persistent.
 Rebuild the image:
 
 ```bash
-docker compose build --pull
+docker compose build --pull --no-cache
 ```
 
-The Dockerfile installs the current `@github/copilot` package at build time.
+The Dockerfile installs the latest `@github/copilot` package at build time.
 
 Your project and authentication volumes are unaffected.
 
