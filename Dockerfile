@@ -32,13 +32,26 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     python3-venv \
-    php-cli \
-    php-curl \
-    php-mbstring \
-    php-xml \
-    php-zip \
-    php-intl \
+    lsb-release \
     golang-go \
+    && rm -rf /var/lib/apt/lists/*
+
+# PHP
+RUN curl -fsSL https://packages.sury.org/debsuryorg-archive-keyring.deb \
+      -o /tmp/debsuryorg-archive-keyring.deb \
+    && dpkg -i /tmp/debsuryorg-archive-keyring.deb \
+    && rm /tmp/debsuryorg-archive-keyring.deb \
+    && echo "deb [signed-by=/usr/share/keyrings/debsuryorg-archive-keyring.gpg] https://packages.sury.org/php/ $(lsb_release -sc) main" \
+      > /etc/apt/sources.list.d/php.list \
+    && apt-get update \
+    && apt-get install -y \
+        php8.5-cli \
+        php8.5-curl \
+        php8.5-mbstring \
+        php8.5-xml \
+        php8.5-zip \
+        php8.5-intl \
+    && php -r 'exit(version_compare(PHP_VERSION, "8.5.12", ">=") ? 0 : 1);' \
     && rm -rf /var/lib/apt/lists/*
 
 # GitHub CLI
